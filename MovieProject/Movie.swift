@@ -5,9 +5,9 @@
 //  Created by 염성필 on 2023/07/28.
 //
 
-import Foundation
+import UIKit
 
-struct Movie {
+struct Movie: Codable {
     var title: String
     var releaseDate: String
     var runtime: Int

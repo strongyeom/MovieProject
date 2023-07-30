@@ -55,5 +55,6 @@ class MovieTableViewCell: UITableViewCell {
         self.descriptionLabel.text = row.overview
         self.descriptionLabel.font = UIFont.systemFont(ofSize: 11, weight: .light)
     }
+    
 
 }

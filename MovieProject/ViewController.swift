@@ -13,9 +13,22 @@ class ViewController: UITableViewController {
     
     var addMovieCount: Int = 0
     
+    let encoder = JSONEncoder()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.rowHeight = 200
+        
+        print(#fileID, #function, #line,"- <#comment#>" )
+
+        if let savedData = UserDefaults.standard.object(forKey: "MovieList") as? Data {
+            let decoder = JSONDecoder()
+            if let savedObject = try? decoder.decode([Movie].self, from: savedData) {
+                movieList.movies = savedObject
+                print("viewdidLoad - movieList.movies",movieList.movies)
+            }
+        }
+
     }
     
     @IBAction func addBtnClicked(_ sender: UIBarButtonItem) {
@@ -59,10 +72,40 @@ class ViewController: UITableViewController {
         return cell
     }
     
+    // 테이블 뷰 삭제 메시드 추가
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            
+           
+            movieList.movies.remove(at: indexPath.row)
+            print("movieList.movies", movieList.movies)
+            
+            // 구조체가 들어감... UserDefaults에는 구조체가 들어 갈 수 없음 => 인코딩, 디코딩 작업 필요함
+            /// encoded는 Data형
+            // movieList.movies : 구조체 배열
+            if let encoded = try? encoder.encode(movieList.movies) {
+                UserDefaults.standard.setValue(encoded, forKey: "MovieList")
+            }
+
+
+            setUserdefaults()
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+            tableView.reloadData()
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("Cell이 눌렸다 \(indexPath.row) , 영화 이름 : \(movieList.movies[indexPath.row].title)")
+
     }
-
-
+    
+    
+    func setUserdefaults() {
+        let encoder = JSONEncoder()
+        
+        if let encoded = try? encoder.encode(movieList.movies) {
+            UserDefaults.standard.setValue(encoded, forKey: "MovieList")
+            print("UserDefaults 저장")
+        }
+    }
 }
-
